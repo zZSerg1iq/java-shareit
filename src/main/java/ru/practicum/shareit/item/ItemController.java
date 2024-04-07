@@ -48,7 +48,7 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
-        if (text.isEmpty()){
+        if (text.isEmpty()) {
             return new ArrayList<>();
         }
         return itemService.searchItemsByText(text);
