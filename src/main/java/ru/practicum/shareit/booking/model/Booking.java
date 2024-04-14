@@ -8,9 +8,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * TODO Sprint add-bookings.
- */
 @NoArgsConstructor
 @Data
 @Entity

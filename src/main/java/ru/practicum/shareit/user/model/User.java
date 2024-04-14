@@ -8,9 +8,6 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Entity
 @Data
 @Table(name = "users")

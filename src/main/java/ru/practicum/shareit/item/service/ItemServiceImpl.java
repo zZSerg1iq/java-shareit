@@ -1,7 +1,5 @@
 package ru.practicum.shareit.item.service;
 
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
@@ -15,16 +13,22 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Класс для работы с товарами
+ * пока не используется
+ * Для следующего использования
+ */
 @Service
 public class ItemServiceImpl implements ItemService {
 
-    @Setter
-    @Autowired
     private ItemRepository repository;
 
-    @Setter
-    @Autowired
     private UserRepository userRepository;
+
+    public ItemServiceImpl(ItemRepository repository, UserRepository userRepository) {
+        this.repository = repository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {

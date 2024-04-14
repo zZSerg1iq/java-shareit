@@ -1,7 +1,5 @@
 package ru.practicum.shareit.user.service;
 
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.UserDuplicateEmailException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
@@ -13,12 +11,19 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Класс для работы с пользователями
+ * пока не используется
+ * для следующей версии
+ */
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Setter
-    @Autowired
-    private UserRepository repository;
+    private final UserRepository repository;
+
+    public UserServiceImpl(UserRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public UserDto addUser(UserDto userDto) {

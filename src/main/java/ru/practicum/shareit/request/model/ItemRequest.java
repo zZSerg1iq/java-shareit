@@ -7,9 +7,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * TODO Sprint add-item-requests.
- */
 @Entity
 @Data
 @NoArgsConstructor
