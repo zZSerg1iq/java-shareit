@@ -7,9 +7,8 @@ import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.service.UserServiceInMemoryImp;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,34 +23,36 @@ import java.util.stream.Collectors;
 @Primary
 public class ItemServiceInMemory implements ItemService {
 
-    private final UserService userService;
+    private final UserServiceInMemoryImp userService;
     long id = 0L;
     private final Map<Long, Item> items;
 
-    public ItemServiceInMemory(UserService userService) {
+    public ItemServiceInMemory(UserServiceInMemoryImp userService) {
         this.userService = userService;
         items = new HashMap<>();
     }
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        User user = UserMapper.toDao(userService.getUserById(userId));
-        Item item = ItemMapper.toDao(itemDto);
+        User user = userService.getUserDaoById(userId);
 
-        if (user.getId().equals(userId)) {
+        if (user != null) {
+            Item item = ItemMapper.toDao(itemDto);
             item.setOwner(user);
             item.setId(++id);
             items.put(item.getId(), item);
             user.getItemList().add(item);
             return ItemMapper.toDto(item);
         }
-
-        return ItemMapper.toDto(item);
+        throw new UserNotFoundException();
     }
 
     @Override
-    public ItemDto editItem(Long itemId, ItemDto itemDto, Long ownerId) {
-        Item item = ItemMapper.toDao(findItemById(itemId));
+    public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+        Item item = items.get(itemId);
+        if (item == null) {
+            throw new ItemNotFoundException();
+        }
 
         if (!item.getOwner().getId().equals(ownerId)) {
             throw new UserNotFoundException();
@@ -79,7 +80,7 @@ public class ItemServiceInMemory implements ItemService {
 
     @Override
     public List<ItemDto> findItemsByOwner(Long userId) {
-        User user = UserMapper.toDao(userService.getUserById(userId));
+        User user = userService.getUserDaoById(userId);
         return ItemMapper.toListDto(user.getItemList());
     }
 
@@ -87,7 +88,8 @@ public class ItemServiceInMemory implements ItemService {
     public List<ItemDto> searchItemsByText(String text) {
         final String name = text.toLowerCase();
         return ItemMapper.toListDto(items.values().stream()
-                .filter(item -> item.getName().toLowerCase().contains(name) || item.getDescription().toLowerCase().contains(text))
+                .filter(item -> (item.getName().toLowerCase().contains(name) || item.getDescription().toLowerCase().contains(name))
+                        && item.isAvailable())
                 .collect(Collectors.toList()));
     }
 }

@@ -30,7 +30,7 @@ public class ItemController {
                             @RequestBody ItemDto itemDto,
                             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
 
-        return itemService.editItem(itemId, itemDto, userId);
+        return itemService.updateItem(itemId, itemDto, userId);
     }
 
     @GetMapping("/{itemId}")

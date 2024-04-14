@@ -26,15 +26,20 @@ public class UserServiceInMemoryImp implements UserService {
         this.userMap = new HashMap<>();
     }
 
+    public User getUserDaoById(Long userId) {
+        return userMap.get(userId);
+    }
+
     @Override
     public UserDto addUser(UserDto userDto) {
         User user = UserMapper.toDao(userDto);
 
         if (!users.contains(user)) {
             user.setId(++userId);
+            user.setItemList(new ArrayList<>());
             users.add(user);
             userMap.put(user.getId(), user);
-            return userDto;
+            return UserMapper.toDto(user);
         }
 
         throw new UserDuplicateEmailException();
@@ -50,14 +55,20 @@ public class UserServiceInMemoryImp implements UserService {
 
         if (userDto.getEmail() != null) {
 
-            for (User u : users) {
-                if (u.getEmail().equals(userDto.getEmail())) {
+            for (User checkedUser : users) {
+                if (checkedUser.getEmail().equals(userDto.getEmail()) &&
+                        !checkedUser.equals(user)) {
                     throw new UserDuplicateEmailException();
                 }
             }
-
             user.setEmail(userDto.getEmail());
         }
+
+
+        if (userDto.getName() != null) {
+            user.setName(userDto.getName());
+        }
+
         return UserMapper.toDto(user);
     }
 

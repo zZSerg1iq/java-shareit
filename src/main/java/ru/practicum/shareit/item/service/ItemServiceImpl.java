@@ -42,7 +42,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemDto editItem(Long itemId, ItemDto itemDto, Long ownerId) {
+    public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         Item item = getItem(itemId);
 
         if (!item.getOwner().getId().equals(ownerId)) {
