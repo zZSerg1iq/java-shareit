@@ -18,7 +18,7 @@ import java.util.Map;
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
-    private final String USER_ID_HEADER_NAME = "X-Sharer-User-Id";
+    private final String userIdHeaderName = "X-Sharer-User-Id";
 
     private final BookingService bookingService;
 
@@ -35,7 +35,7 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingDto createBooking(@RequestHeader(USER_ID_HEADER_NAME) Long renterId,
+    public BookingDto createBooking(@RequestHeader(userIdHeaderName) Long renterId,
                                     @RequestBody @Valid BookingDto bookingDto) {
         if (!bookingDto.validateRentDates()) {
             throw new ValidateException(ExceptionMessages.VALIDATE_EXCEPTION.getMessage());
@@ -45,7 +45,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingDto updateBooking(@RequestHeader(USER_ID_HEADER_NAME) Long userId,
+    public BookingDto updateBooking(@RequestHeader(userIdHeaderName) Long userId,
                                     @PathVariable final Long bookingId,
                                     @RequestParam boolean approved) {
 
@@ -53,19 +53,19 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingDto getBookingById(@RequestHeader(USER_ID_HEADER_NAME) Long userId,
+    public BookingDto getBookingById(@RequestHeader(userIdHeaderName) Long userId,
                                      @PathVariable final Long bookingId) {
         return bookingService.getBookingById(userId, bookingId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsAtBooker(@RequestHeader(USER_ID_HEADER_NAME) Long bookerId,
+    public List<BookingDto> getAllBookingsAtBooker(@RequestHeader(userIdHeaderName) Long bookerId,
                                                    @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getAllCustomerBookings(bookerId, state);
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getAllBookingsAtOwner(@RequestHeader(USER_ID_HEADER_NAME) Long ownerId,
+    public List<BookingDto> getAllBookingsAtOwner(@RequestHeader(userIdHeaderName) Long ownerId,
                                                   @RequestParam(defaultValue = "ALL") String state) {
         return bookingService.getAllOwnerBookings(ownerId, state);
     }
