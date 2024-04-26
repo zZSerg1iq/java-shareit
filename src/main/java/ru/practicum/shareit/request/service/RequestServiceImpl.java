@@ -9,9 +9,9 @@ import ru.practicum.shareit.request.repository.ItemRequestRepository;
 @Service
 public class RequestServiceImpl implements RequestService {
 
-
-    @Setter
-    @Autowired
     private ItemRequestRepository repository;
 
+    public RequestServiceImpl(ItemRequestRepository repository) {
+        this.repository = repository;
+    }
 }

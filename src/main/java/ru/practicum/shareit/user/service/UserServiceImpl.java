@@ -11,13 +11,9 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Класс для работы с пользователями
- * пока не используется
- * для следующей версии
- */
 @Service
 public class UserServiceImpl implements UserService {
+
 
     private final UserRepository repository;
 
@@ -28,11 +24,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUser(UserDto userDto) {
         User user = UserMapper.toDao(userDto);
-        Optional<User> check = repository.findUserByEmail(userDto.getEmail());
-        if (check.isPresent()) {
-            throw new UserDuplicateEmailException();
-        }
-
         user = repository.save(user);
 
         return UserMapper.toDto(user);

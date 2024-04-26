@@ -7,6 +7,7 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 
+
 @Entity
 @Data
 @NoArgsConstructor

@@ -1,16 +1,22 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO Sprint add-controllers.
+ */
 @RestController
 @RequestMapping("/items")
 public class ItemController {
+
+    private static final String USER_HEADER = "X-Sharer-User-Id";
 
     private final ItemService itemService;
 
@@ -20,7 +26,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestBody @Valid ItemDto itemDto,
-                           @RequestHeader("X-Sharer-User-Id") Long userId) {
+                           @RequestHeader(USER_HEADER) Long userId) {
 
         return itemService.createItem(itemDto, userId);
     }
@@ -28,26 +34,33 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ItemDto editItem(@PathVariable Long itemId,
                             @RequestBody ItemDto itemDto,
-                            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-
-        return itemService.updateItem(itemId, itemDto, userId);
+                            @RequestHeader(value = USER_HEADER) Long userId) {
+        return itemService.editItem(itemId, itemDto, userId);
     }
+
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable Long itemId) {
-        return itemService.findItemById(itemId);
+    public ItemDtoWithBooking getItemById(@PathVariable Long itemId,
+                                          @RequestHeader(USER_HEADER) long userId) {
+        return itemService.findItemWithBookingById(itemId, userId);
     }
 
+
     @GetMapping()
-    public List<ItemDto> getItemsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.findItemsByOwner(userId);
+    public List<ItemDtoWithBooking> getItemsByOwner(@RequestHeader(USER_HEADER) Long userId) {
+        return itemService.findItemsByOwnerWithBookings(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
-        if (text.isEmpty()) {
-            return new ArrayList<>();
-        }
         return itemService.searchItemsByText(text);
+    }
+
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader(USER_HEADER) Long userId,
+                                 @PathVariable Long itemId,
+                                 @RequestBody @Valid CommentDto requestDto) {
+        return itemService.addComment(userId, itemId, requestDto);
     }
 }
