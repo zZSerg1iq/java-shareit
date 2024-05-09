@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -25,7 +26,7 @@ import static ru.practicum.shareit.booking.model.Status.REJECTED;
 import static ru.practicum.shareit.booking.model.Status.WAITING;
 
 
-@Repository
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -39,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto createBooking(BookingDto bookingDto, Long renterId) {
         UserDto renter = userService.getUserById(renterId);
         ItemDto item = itemService.findItemById(bookingDto.getItemId());
@@ -92,6 +94,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getAllCustomerBookings(Long bookerId, String state) {
         userService.getUserById(bookerId);
 
@@ -120,6 +123,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingDto> getAllOwnerBookings(Long ownerId, String state) {
         userService.getUserById(ownerId);
 
