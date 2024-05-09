@@ -26,13 +26,13 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Map<String, String>> handleValidateException(StatusException e) {
-        Map<String, String> map = new HashMap<>();
-        map.put("error", e.getMessage());
-        map.put("status", e.getMessage());
-        return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    @ExceptionHandler
+//    public ResponseEntity<Map<String, String>> handleValidateException(StatusException e) {
+//        Map<String, String> map = new HashMap<>();
+//        map.put("error", e.getMessage());
+//        map.put("status", e.getMessage());
+//        return new ResponseEntity<>(map, HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @PostMapping
     public BookingDto createBooking(@RequestHeader(userIdHeaderName) Long renterId,
