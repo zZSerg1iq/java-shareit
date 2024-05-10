@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.service;
 
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -26,7 +25,6 @@ import static ru.practicum.shareit.booking.model.Status.REJECTED;
 import static ru.practicum.shareit.booking.model.Status.WAITING;
 
 
-@Service
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.model;
 
 import lombok.*;
+import org.hibernate.Hibernate;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -19,37 +20,25 @@ public class Booking {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;// — уникальный идентификатор бронирования;
+    private Long id;
 
     @Column(name = "booking_start")
-    private LocalDateTime start;// — дата и время начала бронирования;
+    private LocalDateTime start;
 
     @Column(name = "booking_end")
-    private LocalDateTime end;// — дата и время конца бронирования;
+    private LocalDateTime end;
 
     @ManyToOne
     @JoinColumn
-    private Item item;// — вещь, которую пользователь бронирует;
+    private Item item;
 
     @ManyToOne
-    private User booker;// — пользователь, который осуществляет бронирование;
+    private User booker;
 
     @OneToOne
-    private User owner;// — владелец;
+    private User owner;
 
     @Enumerated(value = EnumType.STRING)
-    private Status status; // — статус бронирования. Может принимать одно из следующих значений:
+    private Status status;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return Objects.equals(start, booking.start) && Objects.equals(end, booking.end) && Objects.equals(item, booking.item) && Objects.equals(booker, booking.booker) && status == booking.status;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(start, end, item, booker, status);
-    }
 }
