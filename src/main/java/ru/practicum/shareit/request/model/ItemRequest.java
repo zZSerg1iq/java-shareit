@@ -1,15 +1,17 @@
 package ru.practicum.shareit.request.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.util.Date;
 
+
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class ItemRequest {
 
     @Id

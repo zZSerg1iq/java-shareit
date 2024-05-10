@@ -3,10 +3,10 @@ package ru.practicum.shareit.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class AvailableException extends RuntimeException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class ValidateException extends RuntimeException {
 
-    public AvailableException(String message) {
+    public ValidateException(String message) {
         super(message);
     }
 }
