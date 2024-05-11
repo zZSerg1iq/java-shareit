@@ -1,53 +1,21 @@
 package ru.practicum.shareit.item.dto;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.RequestMapper;
-import ru.practicum.shareit.user.dto.UserMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ItemMapper {
+@Mapper
+public interface ItemMapper {
 
-    public static List<ItemDto> toListDto(List<Item> itemList) {
-        List<ItemDto> itemDtoList = new ArrayList<>();
-        for (Item item : itemList) {
-            itemDtoList.add(toDto(item));
-        }
+    static ItemMapper INSTANCE = Mappers.getMapper(ItemMapper.class);
 
-        return itemDtoList;
-    }
+    List<ItemDto> toListDto(List<Item> itemList);
 
-    public static ItemDto toDto(Item item) {
-        return ItemDto
-                .builder()
-                .id(item.getId())
-                .name(item.getName())
-                .available(item.isAvailable())
-                .owner(UserMapper.toDto(item.getOwner()))
-                .renter(item.getRenter() != null ? UserMapper.toDto(item.getRenter()) : null)
-                .itemRequest(item.getRequest() != null ? RequestMapper.toDto(item.getRequest()) : null)
-                .description(item.getDescription())
-                .build();
-    }
+    @Mapping(source = "request.id", target = "requestId")
+    ItemDto toDto(Item item);
 
-    public static Item toDao(ItemDto itemDto) {
-        Item item = new Item();
-        item.setAvailable(itemDto.getAvailable());
-        item.setDescription(itemDto.getDescription());
-        item.setName(itemDto.getName());
-
-        if (itemDto.getOwner() != null) {
-            item.setOwner(UserMapper.toDao(itemDto.getOwner()));
-        }
-
-        if (itemDto.getRenter() != null) {
-            item.setRenter(UserMapper.toDao(itemDto.getRenter()));
-        }
-
-        if (itemDto.getItemRequest() != null) {
-            item.setRequest(RequestMapper.toDao(itemDto.getItemRequest()));
-        }
-        return item;
-    }
+    Item toDao(ItemDto itemDto);
 }

@@ -23,10 +23,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto addUser(UserDto userDto) {
-        User user = UserMapper.toDao(userDto);
+        User user = UserMapper.INSTANCE.toDao(userDto);
         user = repository.save(user);
 
-        return UserMapper.toDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
@@ -45,17 +45,17 @@ public class UserServiceImpl implements UserService {
         }
         repository.save(user);
 
-        return UserMapper.toDto(user);
+        return UserMapper.INSTANCE.toDto(user);
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        return UserMapper.toDto(getById(userId));
+        return UserMapper.INSTANCE.toDto(getById(userId));
     }
 
     @Override
     public List<UserDto> getAll() {
-        return UserMapper.toDtoList(repository.findAll());
+        return UserMapper.INSTANCE.toDtoList(repository.findAll());
     }
 
     @Override
