@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 
+import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 public class BookingDto {
 
     private Long id;

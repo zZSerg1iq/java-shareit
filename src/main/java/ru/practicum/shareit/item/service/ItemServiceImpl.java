@@ -14,6 +14,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -31,23 +33,32 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
-    public ItemServiceImpl(ItemRepository repository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemServiceImpl(ItemRepository repository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository, ItemRequestRepository requestRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        Item item = ItemMapper.toDao(itemDto);
 
+        Item item = ItemMapper.INSTANCE.toDao(itemDto);
+
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> itemRequest = requestRepository.findById(itemDto.getRequestId());
+            if (itemRequest.isPresent()) {
+                item.setRequest(itemRequest.get());
+            }
+        }
         User owner = findUserById(userId);
         item.setOwner(owner);
         item = repository.save(item);
 
-        return ItemMapper.toDto(item);
+        return ItemMapper.INSTANCE.toDto(item);
     }
 
     @Override
@@ -69,12 +80,12 @@ public class ItemServiceImpl implements ItemService {
         }
 
         item = repository.save(item);
-        return ItemMapper.toDto(item);
+        return ItemMapper.INSTANCE.toDto(item);
     }
 
     @Override
     public ItemDto findItemById(Long itemId) {
-        return ItemMapper.toDto(getItemById(itemId));
+        return ItemMapper.INSTANCE.toDto(getItemById(itemId));
     }
 
     @Override
@@ -104,7 +115,7 @@ public class ItemServiceImpl implements ItemService {
             return new ArrayList<>();
         }
         var a = repository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIs(text, text, true);
-        return ItemMapper.toListDto(a);
+        return ItemMapper.INSTANCE.toListDto(a);
     }
 
     private Item getItemById(Long itemId) {

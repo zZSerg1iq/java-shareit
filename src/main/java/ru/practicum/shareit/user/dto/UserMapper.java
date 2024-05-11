@@ -1,39 +1,19 @@
 package ru.practicum.shareit.user.dto;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class UserMapper {
+@Mapper
+public interface UserMapper {
 
-    public static List<UserDto> toDtoList(List<User> userList) {
-        List<UserDto> userDtoList = new ArrayList<>();
+    static UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-        if (userList.size() > 0) {
-            for (User u : userList) {
-                userDtoList.add(toDto(u));
-            }
-        }
-        return userDtoList;
-    }
+    List<UserDto> toDtoList(List<User> userList);
 
-    public static UserDto toDto(User user) {
-        return UserDto
-                .builder()
-                .email(user.getEmail())
-                .name(user.getName())
-                .id(user.getId())
-                .build();
-    }
+    UserDto toDto(User user);
 
-    public static User toDao(UserDto userDto) {
-        User user = new User();
-        user.setEmail(userDto.getEmail());
-        user.setName(userDto.getName());
-        user.setId(userDto.getId());
-        return user;
-    }
-
-
+    User toDao(UserDto userDto);
 }

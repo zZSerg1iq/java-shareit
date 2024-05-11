@@ -30,4 +30,6 @@ public class ItemDto {
 
     private ItemRequestDto itemRequest;
 
+    private Long requestId;
+
 }
