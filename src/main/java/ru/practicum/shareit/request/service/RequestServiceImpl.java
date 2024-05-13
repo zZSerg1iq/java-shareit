@@ -47,6 +47,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public ItemRequestDto getByRequestId(Long userId, Long requestId) {
 
         userService.getUserById(userId);
@@ -60,6 +61,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public List<ItemRequestDto> getAllByRequesterId(Long userId) {
 
         userService.getUserById(userId);
@@ -70,6 +72,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public List<ItemRequestDto> getAll(Long userId, Integer from, Integer size) {
         userService.getUserById(userId);
         List<ItemRequestDto> outputDTOs = ItemRequestMapper.INSTANCE.toIDtoList(requestRepository.findAllFromOtherUsers(userId, from, size));

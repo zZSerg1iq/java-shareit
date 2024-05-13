@@ -75,6 +75,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approveBooking(Long userId, Long bookingId, boolean approved) {
         BookingDto bookingDto = getBookingById(userId, bookingId);
 

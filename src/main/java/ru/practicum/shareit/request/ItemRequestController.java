@@ -7,7 +7,8 @@ import ru.practicum.shareit.request.service.RequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -35,8 +36,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAll(@RequestHeader(USER_HEADER) Long userId,
-                                       @RequestParam(defaultValue = "1") @Min(0) Integer from,
-                                       @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+                                       @RequestParam(defaultValue = "1") @PositiveOrZero Integer from,
+                                       @RequestParam(defaultValue = "20") @Positive @Max(100) Integer size) {
 
         return requestService.getAll(userId, from, size);
     }

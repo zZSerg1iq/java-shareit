@@ -8,7 +8,8 @@ import ru.practicum.shareit.exceptions.ExceptionMessages;
 import ru.practicum.shareit.exceptions.ValidateException;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -51,8 +52,8 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllBookingsAtBooker(@RequestHeader(userIdHeaderName) Long bookerId,
                                                    @RequestParam(defaultValue = "ALL") String state,
-                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                   @RequestParam(defaultValue = "20") @Min(1) Integer size
+                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                   @RequestParam(defaultValue = "20") @Positive Integer size
     ) {
         return bookingService.getAllCustomerBookings(bookerId, state, from, size);
     }
@@ -60,8 +61,8 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getAllBookingsAtOwner(@RequestHeader(userIdHeaderName) Long ownerId,
                                                   @RequestParam(defaultValue = "ALL") String state,
-                                                  @RequestParam(defaultValue = "0") @Min(0) Integer from,
-                                                  @RequestParam(defaultValue = "20") @Min(1) Integer size) {
+                                                  @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                  @RequestParam(defaultValue = "20") @Positive Integer size) {
 
         return bookingService.getAllOwnerBookings(ownerId, state, from, size);
     }
