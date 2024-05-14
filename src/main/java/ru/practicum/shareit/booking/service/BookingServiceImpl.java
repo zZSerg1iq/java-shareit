@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -21,10 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.shareit.booking.model.Status.REJECTED;
-import static ru.practicum.shareit.booking.model.Status.WAITING;
-
-
+@Service
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -77,6 +75,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDto approveBooking(Long userId, Long bookingId, boolean approved) {
         BookingDto bookingDto = getBookingById(userId, bookingId);
 
@@ -93,28 +92,29 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getAllCustomerBookings(Long bookerId, String state) {
+    public List<BookingDto> getAllCustomerBookings(Long bookerId, String state, int offset, int limit) {
         userService.getUserById(bookerId);
 
         switch (state) {
-            case "ALL":
+            case "ALL": {
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdOrderByStartDesc(bookerId));
+                        .findAllByBookerIdOrderByStartDesc(bookerId, limit, offset));
+            }
             case "CURRENT":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, LocalDateTime.now(), LocalDateTime.now()));
+                        .findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(bookerId, LocalDateTime.now(), limit, offset));
             case "PAST":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, LocalDateTime.now()));
+                        .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(bookerId, LocalDateTime.now(), limit, offset));
             case "FUTURE":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, LocalDateTime.now()));
+                        .findAllByBookerIdAndStartIsAfterOrderByStartDesc(bookerId, LocalDateTime.now(), limit, offset));
             case "WAITING":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, WAITING));
+                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, "WAITING", limit, offset));
             case "REJECTED":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, REJECTED));
+                        .findAllByBookerIdAndStatusOrderByStartDesc(bookerId, "REJECTED", limit, offset));
             default:
                 throw new StatusException(String.format("Unknown state: %s", state));
         }
@@ -122,28 +122,28 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<BookingDto> getAllOwnerBookings(Long ownerId, String state) {
+    public List<BookingDto> getAllOwnerBookings(Long ownerId, String state, Integer offset, Integer limit) {
         userService.getUserById(ownerId);
 
         switch (state) {
             case "ALL":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdOrderByStartDesc(ownerId));
+                        .findAllByItemOwnerIdOrderByStartDesc(ownerId, limit, offset));
             case "CURRENT":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId, LocalDateTime.now(), LocalDateTime.now()));
+                        .findAllByItemOwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(ownerId, LocalDateTime.now(), limit, offset));
             case "PAST":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(ownerId, LocalDateTime.now()));
+                        .findAllByItemOwnerIdAndEndIsBeforeOrderByStartDesc(ownerId, LocalDateTime.now(), limit, offset));
             case "FUTURE":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(ownerId, LocalDateTime.now()));
+                        .findAllByItemOwnerIdAndStartIsAfterOrderByStartDesc(ownerId, LocalDateTime.now(), limit, offset));
             case "WAITING":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, WAITING));
+                        .findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, "WAITING", limit, offset));
             case "REJECTED":
                 return bookingEntityToDtoList(bookingRepository
-                        .findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, REJECTED));
+                        .findAllByItemOwnerIdAndStatusOrderByStartDesc(ownerId, "REJECTED", limit, offset));
             default:
                 throw new StatusException(String.format("Unknown state: %s", state));
         }

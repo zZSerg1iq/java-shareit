@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
@@ -14,6 +15,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -31,23 +34,33 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository requestRepository;
 
-    public ItemServiceImpl(ItemRepository repository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository) {
+    public ItemServiceImpl(ItemRepository repository, UserRepository userRepository, BookingRepository bookingRepository, CommentRepository commentRepository, ItemRequestRepository requestRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.commentRepository = commentRepository;
+        this.requestRepository = requestRepository;
     }
 
     @Override
+    @Transactional
     public ItemDto createItem(ItemDto itemDto, Long userId) {
-        Item item = ItemMapper.toDao(itemDto);
 
+        Item item = ItemMapper.INSTANCE.toDao(itemDto);
+
+        if (itemDto.getRequestId() != null) {
+            Optional<ItemRequest> itemRequest = requestRepository.findById(itemDto.getRequestId());
+            if (itemRequest.isPresent()) {
+                item.setRequest(itemRequest.get());
+            }
+        }
         User owner = findUserById(userId);
         item.setOwner(owner);
         item = repository.save(item);
 
-        return ItemMapper.toDto(item);
+        return ItemMapper.INSTANCE.toDto(item);
     }
 
     @Override
@@ -69,15 +82,16 @@ public class ItemServiceImpl implements ItemService {
         }
 
         item = repository.save(item);
-        return ItemMapper.toDto(item);
+        return ItemMapper.INSTANCE.toDto(item);
     }
 
     @Override
     public ItemDto findItemById(Long itemId) {
-        return ItemMapper.toDto(getItemById(itemId));
+        return ItemMapper.INSTANCE.toDto(getItemById(itemId));
     }
 
     @Override
+    @Transactional
     public ItemDtoWithBooking findItemWithBookingById(Long itemId, Long ownerId) {
 
         ItemDtoWithBooking responseItem = ItemWithBookingsMapper.INSTANCE.toDto(repository.findById(itemId)
@@ -99,12 +113,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItemsByText(String text) {
+    public List<ItemDto> searchItemsByText(String text, Integer from, Integer size) {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        var a = repository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIs(text, text, true);
-        return ItemMapper.toListDto(a);
+        var a = repository.findByNameOrDescription(text, size, from);
+        return ItemMapper.INSTANCE.toListDto(a);
     }
 
     private Item getItemById(Long itemId) {
@@ -168,6 +182,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDTO) {
         User user = findUserById(userId);
         Item item = getItemById(itemId);
@@ -180,10 +195,6 @@ public class ItemServiceImpl implements ItemService {
         }
 
         commentDTO.setCreated(now);
-//        commentDTO.setAuthorId(userId);
-//        commentDTO.setItemId(itemId);
-//        ValidatorUtils.validate(commentDTO);
-
         Comment comment = CommentMapper.INSTANCE.toEntity(commentDTO);
         comment.setAuthor(user);
         comment.setItem(item);
@@ -199,10 +210,10 @@ public class ItemServiceImpl implements ItemService {
 
 
     @Override
-    public List<ItemDtoWithBooking> findItemsByOwnerWithBookings(Long userId) {
-        //repository.findItemsByOwnerId(userId);
+    @Transactional
+    public List<ItemDtoWithBooking> findItemsByOwnerWithBookings(Long userId, Integer from, Integer size) {
 
-        List<ItemDtoWithBooking> responseItems = ItemWithBookingsMapper.INSTANCE.toDtos(repository.findAllByOwnerIdOrderById(userId));
+        List<ItemDtoWithBooking> responseItems = ItemWithBookingsMapper.INSTANCE.toDtos(repository.findAllByOwnerIdOrderById(userId, from, size));
 
         List<Long> itemsIds = responseItems.stream()
                 .map(ItemDtoWithBooking::getId)

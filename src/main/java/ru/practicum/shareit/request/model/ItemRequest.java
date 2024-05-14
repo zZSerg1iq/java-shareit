@@ -1,15 +1,17 @@
 package ru.practicum.shareit.request.model;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemRequest {
@@ -18,12 +20,13 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description;  // текст запроса, содержащий описание требуемой вещи;
+    private String description;
 
     @ManyToOne
     @JoinColumn
-    private User requestor;  // пользователь, создавший запрос;
+    private User requester;
 
-    private Date created;  // дата и время создания запроса.
+    @CreationTimestamp
+    private LocalDateTime created;
 
 }

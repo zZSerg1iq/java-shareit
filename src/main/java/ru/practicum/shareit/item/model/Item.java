@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
+@Builder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,4 +34,5 @@ public class Item {
     @OneToOne
     @JoinColumn
     private ItemRequest request;
+
 }

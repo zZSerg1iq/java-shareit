@@ -1,19 +1,35 @@
 package ru.practicum.shareit.item.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
-@Repository
+
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    List<Item> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndAvailableIs(String name, String desc, boolean defaultTrue);
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM item AS i " +
+                    "WHERE available = TRUE " +
+                    "and " +
+                    "(LOWER(name) LIKE CONCAT('%', LOWER(:name), '%') " +
+                    "OR " +
+                    "LOWER(description) LIKE CONCAT('%', LOWER(:name), '%'))" +
+                    "ORDER BY i.id LIMIT :size OFFSET :from")
+    List<Item> findByNameOrDescription(String name, Integer size, Integer from);
 
-    List<Item> findItemsByOwnerId(Long ownerId);
-
-    List<Item> findAllByOwnerIdOrderById(Long ownerId);
+    @Query(nativeQuery = true,
+            value = "SELECT * FROM item AS i " +
+                    "LEFT JOIN users u on u.id = i.owner " +
+                    "LEFT JOIN public.item_request r on r.id = i.request_id " +
+                    "WHERE i.owner = :ownerId " +
+                    "ORDER BY i.id LIMIT :size OFFSET :from")
+    List<Item> findAllByOwnerIdOrderById(Long ownerId, Integer from, Integer size);
 
     boolean existsItemByIdAndOwner_Id(Long itemId, Long ownerId);
+
+    List<Item> findAllByRequestId(Long requestId);
+
+    List<Item> findAllByRequest_IdIn(List<Long> requestIds);
 }
