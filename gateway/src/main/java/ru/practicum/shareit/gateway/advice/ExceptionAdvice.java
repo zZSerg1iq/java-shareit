@@ -16,7 +16,7 @@ import java.util.Map;
 public class ExceptionAdvice {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Map<String, String>> handleValidateException(StatusException e) {
         log.info("500", e.getMessage(), e);
 

@@ -112,9 +112,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItemsByText(String text, Integer from, Integer size) {
-        if (text.isEmpty()) {
-            return new ArrayList<>();
-        }
         var a = repository.findByNameOrDescription(text, size, from);
         return ItemMapper.INSTANCE.toListDto(a);
     }
