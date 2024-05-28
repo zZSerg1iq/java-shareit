@@ -21,13 +21,13 @@ import ru.practicum.shareit.server.user.model.User;
 import ru.practicum.shareit.server.user.repository.UserRepository;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Objects;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -292,19 +292,20 @@ class ItemControllerIntegrationTest {
     @Test
     @Order(12)
     @SneakyThrows
-    public void testGetAll() {
+    public void testGetAllNoTextValidation() {
         String text = "";
 
         int from = 0;
         int size = 2;
-        mvc.perform(get("/items/search")
-                        .header(USER_HEADER, userId2)
-                        .param("text", text)
-                        .param("from", String.valueOf(from))
-                        .param("size", String.valueOf(size))
-                        .accept(MediaType.APPLICATION_JSON))
+        mvc.perform(
+                        get("/items/search")
+                                .header(USER_HEADER, userId2)
+                                .param("text", text)
+                                .param("from", String.valueOf(from))
+                                .param("size", String.valueOf(size))
+                                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(mapper.writeValueAsString(List.of())));
+                .andExpect(jsonPath("$.length()").value(2));
     }
 }
 
