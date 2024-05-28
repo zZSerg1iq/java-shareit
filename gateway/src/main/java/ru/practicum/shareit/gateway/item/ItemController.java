@@ -6,8 +6,11 @@ import ru.practicum.shareit.gateway.item.dto.CommentDto;
 import ru.practicum.shareit.gateway.item.dto.ItemDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/items")
@@ -51,9 +54,13 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Object searchItems(@RequestParam String text,
+    public Object searchItems(@RequestParam @NotNull String text,
                               @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                               @RequestParam(defaultValue = "20") @Positive Integer size) {
+        if (text.isBlank()) {
+            return new ArrayList<>();
+        }
+
         return client.searchItemsByText(text, from, size);
     }
 
